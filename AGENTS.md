@@ -19,12 +19,12 @@ docs/example-feature.md
 
 There is no build step. Userscripts are plain JavaScript files installed directly by a userscript manager.
 
-Run syntax checks before committing:
+Run syntax checks before committing (bun has no `--check` flag; `bun build --no-bundle` validates syntax, exit 0 means valid, stdout is discarded):
 
 ```sh
-node --check userscripts/perplexity-hide-non-space-threads.user.js
-node --check userscripts/youtube-default-to-subscriptions.user.js
-node --check userscripts/youtube-transcript-copy-download.user.js
+bun build --no-bundle userscripts/perplexity-hide-non-space-threads.user.js >/dev/null
+bun build --no-bundle userscripts/youtube-default-to-subscriptions.user.js >/dev/null
+bun build --no-bundle userscripts/youtube-transcript-copy-download.user.js >/dev/null
 ```
 
 Search for stale metadata or retired names when renaming scripts:
@@ -46,7 +46,7 @@ Use plain JavaScript with no bundler or external runtime dependency. Keep script
 
 ## Testing Guidelines
 
-There is no automated test suite. At minimum, run `node --check` on every changed userscript. For behavior changes, manually test in the target site with the intended userscript manager and verify install/update URLs.
+There is no automated test suite. At minimum, run `bun build --no-bundle <script> >/dev/null` on every changed userscript (exit code 0 means the syntax is valid). For behavior changes, manually test in the target site with the intended userscript manager and verify install/update URLs.
 
 ## Commit & Pull Request Guidelines
 

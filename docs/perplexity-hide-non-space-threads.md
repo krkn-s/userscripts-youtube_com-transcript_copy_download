@@ -59,7 +59,7 @@ This repository keeps installable userscripts under `userscripts/` and per-scrip
 Before publishing a change, run:
 
 ```sh
-node --check userscripts/perplexity-hide-non-space-threads.user.js
+bun build --no-bundle userscripts/perplexity-hide-non-space-threads.user.js >/dev/null
 ```
 
 Also search the repository for stale owner names, retired source repository links, and outdated version notes before release.

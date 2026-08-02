@@ -93,7 +93,7 @@ This repository keeps installable userscripts under `userscripts/` and per-scrip
 Before publishing a change, run:
 
 ```sh
-node --check userscripts/youtube-transcript-copy-download.user.js
+bun build --no-bundle userscripts/youtube-transcript-copy-download.user.js >/dev/null
 ```
 
 Also search the repository for stale owner names, retired dated filenames, and outdated version notes before release.
