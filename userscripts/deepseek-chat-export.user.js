@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DeepSeek Chat Export
 // @namespace    https://github.com/krkn-s
-// @version      2026.08.02.1
+// @version      2026.08.02.2
 // @description  Exports a DeepSeek shared conversation (including the thinking chain) as Markdown or JSON from the share page.
 // @author       krkn-s
 // @homepage     https://github.com/krkn-s/userscripts
@@ -35,7 +35,7 @@
 (function () {
   'use strict';
 
-  const VERSION = '2026.08.02.1';
+  const VERSION = '2026.08.02.2';
   const TOOL = 'deepseek-chat-export/' + VERSION;
   const SHARE_PREFIX = '/a/chat/s/';
 
@@ -525,10 +525,10 @@
     var style = document.createElement('style');
     style.id = 'ds-export-style';
     style.textContent = [
-      '.ds-export-btn{height:34px;min-width:42px;margin-right:8px;padding:0 12px;border:1px solid color-mix(in srgb,currentColor 25%,transparent);border-radius:999px;background:transparent;color:inherit;font-family:inherit;font-size:12px;font-weight:600;letter-spacing:.5px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;transition:background .15s ease,border-color .15s ease,transform .1s ease}',
-      '.ds-export-btn:hover{background:color-mix(in srgb,currentColor 10%,transparent);border-color:color-mix(in srgb,currentColor 45%,transparent)}',
-      '.ds-export-btn:active{transform:scale(.96)}',
-      '.ds-export-btn[disabled]{opacity:.55;cursor:wait}',
+      '.ds-export-btn{min-width:44px;margin-right:6px;cursor:pointer}',
+      '.ds-export-btn .ds-export-label{font-size:12px;font-weight:600;letter-spacing:.4px;display:inline-flex;align-items:center;padding:0 2px}',
+      '.ds-export-btn:active{transform:scale(.97)}',
+      '.ds-export-btn[aria-disabled="true"]{opacity:.45;cursor:wait;pointer-events:none}',
       '#ds-export-toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:99999;padding:8px 14px;border-radius:999px;background:color-mix(in srgb,currentColor 12%,transparent);border:1px solid color-mix(in srgb,currentColor 30%,transparent);font:600 12px/1 sans-serif;color:currentColor;opacity:0;transition:opacity .25s ease;pointer-events:none}',
       '#ds-export-toast.show{opacity:1}'
     ].join('\n');
@@ -551,11 +551,33 @@
   }
 
   function makeButton(label, title) {
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'ds-export-btn' + (label === 'MD' ? ' ds-export-btn-md' : ' ds-export-btn-json');
+    // Mirror the page Share button construction (.ds-button capsule) so the
+    // height, capsule shape and focus behaviour match the native UI exactly.
+    var btn = document.createElement('div');
+    btn.setAttribute('role', 'button');
+    btn.setAttribute('tabindex', '0');
     btn.title = title;
-    btn.textContent = label;
+    btn.className = [
+      'ds-button',
+      'ds-button--iconLabelTertiary',
+      'ds-button--icon',
+      'ds-button--capsule',
+      'ds-button--l',
+      'ds-button--icon-relative-m',
+      'ds-export-btn',
+      label === 'MD' ? 'ds-export-btn-md' : 'ds-export-btn-json'
+    ].join(' ');
+    btn.style.setProperty('--dsl-button-height', '34px');
+    var bg = document.createElement('div');
+    bg.className = 'ds-button__background';
+    var icon = document.createElement('div');
+    icon.className = 'ds-button__icon ds-button__icon--last-child';
+    var labelEl = document.createElement('span');
+    labelEl.className = 'ds-export-label';
+    labelEl.textContent = label;
+    icon.appendChild(labelEl);
+    btn.appendChild(bg);
+    btn.appendChild(icon);
     return btn;
   }
 
@@ -573,9 +595,12 @@
   var busy = false;
 
   function setBusy(value) {
-    var b1 = document.querySelector('.ds-export-btn-md');
-    var b2 = document.querySelector('.ds-export-btn-json');
-    [b1, b2].forEach(function (b) { if (b) b.disabled = value; });
+    ['ds-export-btn-md', 'ds-export-btn-json'].forEach(function (sel) {
+      var btn = document.querySelector('.' + sel);
+      if (!btn) return;
+      if (value) btn.setAttribute('aria-disabled', 'true');
+      else btn.removeAttribute('aria-disabled');
+    });
   }
 
   async function runExport(kind) {
@@ -617,8 +642,17 @@
     if (!share) return;
     var md = makeButton('MD', 'Exporter la conversation en Markdown');
     var json = makeButton('JSON', 'Exporter la conversation en JSON');
-    md.addEventListener('click', function () { runExport('md'); });
-    json.addEventListener('click', function () { runExport('json'); });
+    function wire(btn, kind) {
+      btn.addEventListener('click', function () { runExport(kind); });
+      btn.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          runExport(kind);
+        }
+      });
+    }
+    wire(md, 'md');
+    wire(json, 'json');
     share.parentNode.insertBefore(md, share);
     share.parentNode.insertBefore(json, share);
   }

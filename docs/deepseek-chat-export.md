@@ -18,7 +18,7 @@ steps with their source links.
 ## Current Version
 
 - Script file: `userscripts/deepseek-chat-export.user.js`
-- Script version: `2026.08.02.1`
+- Script version: `2026.08.02.2`
 - Owner: <https://github.com/krkn-s>
 - Repository: <https://github.com/krkn-s/userscripts>
 
@@ -71,7 +71,7 @@ https://raw.githubusercontent.com/krkn-s/userscripts/main/userscripts/deepseek-c
   "url": "https://chat.deepseek.com/a/chat/s/<id>",
   "shareId": "<id>",
   "exportedAt": "2026-08-02T10:00:00.000Z",
-  "tool": "deepseek-chat-export/2026.08.02.1",
+  "tool": "deepseek-chat-export/2026.08.02.2",
   "messages": [
     { "role": "user", "content": "…" },
     {
