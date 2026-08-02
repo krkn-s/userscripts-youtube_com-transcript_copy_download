@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DeepSeek Chat Export
 // @namespace    https://github.com/krkn-s
-// @version      2026.08.02.4
+// @version      2026.08.02.5
 // @description  Exports a DeepSeek shared conversation (including the thinking chain) as Markdown or JSON from the share page.
 // @author       krkn-s
 // @homepage     https://github.com/krkn-s/userscripts
@@ -35,7 +35,7 @@
 (function () {
   'use strict';
 
-  const VERSION = '2026.08.02.4';
+  const VERSION = '2026.08.02.5';
   const TOOL = 'deepseek-chat-export/' + VERSION;
   const SHARE_PREFIX = '/a/chat/s/';
 
@@ -642,18 +642,19 @@
   }
 
   // The Share button carries per-instance hashed classes that can override its
-  // vertical alignment inside the header row (e.g. align-self / margins). Our
-  // buttons lack those classes, so they fall back to the row default and can
-  // end up top-aligned next to a centered Share button. Copy the resolved
-  // vertical alignment of the Share button onto ours so they sit on the same
-  // line, whatever the surrounding flex rules are.
+  // vertical alignment inside the header row (e.g. align-self). Our buttons
+  // lack those classes, so they fall back to the row default and can end up
+  // top-aligned next to a centered Share button. Copy only the resolved
+  // align-self of the Share button onto ours. The Share button's own vertical
+  // margins are NOT copied: combined with the centered align-self they push
+  // our buttons below the Share.
   function mirrorShareAlignment(md, json, share) {
     try {
       var cs = window.getComputedStyle(share);
       [md, json].forEach(function (btn) {
         btn.style.alignSelf = (cs.alignSelf && cs.alignSelf !== 'auto') ? cs.alignSelf : 'center';
-        if (cs.marginTop) btn.style.marginTop = cs.marginTop;
-        if (cs.marginBottom) btn.style.marginBottom = cs.marginBottom;
+        btn.style.marginTop = '0px';
+        btn.style.marginBottom = '0px';
       });
       md.style.marginRight = '6px';
     } catch (e) { /* never block the injection */ }
