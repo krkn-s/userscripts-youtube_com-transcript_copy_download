@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DeepSeek Chat Export
 // @namespace    https://github.com/krkn-s
-// @version      2026.08.02.3
+// @version      2026.08.02.4
 // @description  Exports a DeepSeek shared conversation (including the thinking chain) as Markdown or JSON from the share page.
 // @author       krkn-s
 // @homepage     https://github.com/krkn-s/userscripts
@@ -35,7 +35,7 @@
 (function () {
   'use strict';
 
-  const VERSION = '2026.08.02.3';
+  const VERSION = '2026.08.02.4';
   const TOOL = 'deepseek-chat-export/' + VERSION;
   const SHARE_PREFIX = '/a/chat/s/';
 
@@ -525,7 +525,7 @@
     var style = document.createElement('style');
     style.id = 'ds-export-style';
     style.textContent = [
-      '.ds-export-btn{cursor:pointer}',
+      '.ds-export-btn{align-self:center;cursor:pointer}',
       '.ds-export-btn .ds-export-label{font-size:12px;font-weight:600;letter-spacing:.4px;line-height:1;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;padding:0 4px}',
       '.ds-export-btn:active{transform:scale(.97)}',
       '.ds-export-btn[aria-disabled="true"]{opacity:.45;cursor:wait;pointer-events:none}',
@@ -641,6 +641,24 @@
     }
   }
 
+  // The Share button carries per-instance hashed classes that can override its
+  // vertical alignment inside the header row (e.g. align-self / margins). Our
+  // buttons lack those classes, so they fall back to the row default and can
+  // end up top-aligned next to a centered Share button. Copy the resolved
+  // vertical alignment of the Share button onto ours so they sit on the same
+  // line, whatever the surrounding flex rules are.
+  function mirrorShareAlignment(md, json, share) {
+    try {
+      var cs = window.getComputedStyle(share);
+      [md, json].forEach(function (btn) {
+        btn.style.alignSelf = (cs.alignSelf && cs.alignSelf !== 'auto') ? cs.alignSelf : 'center';
+        if (cs.marginTop) btn.style.marginTop = cs.marginTop;
+        if (cs.marginBottom) btn.style.marginBottom = cs.marginBottom;
+      });
+      md.style.marginRight = '6px';
+    } catch (e) { /* never block the injection */ }
+  }
+
   function injectButtons() {
     if (typeof document === 'undefined') return;
     if (document.querySelector('.ds-export-btn-md')) return;
@@ -661,6 +679,7 @@
     wire(json, 'json');
     share.parentNode.insertBefore(md, share);
     share.parentNode.insertBefore(json, share);
+    mirrorShareAlignment(md, json, share);
   }
 
   function start() {
