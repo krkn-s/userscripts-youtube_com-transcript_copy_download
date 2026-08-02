@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DeepSeek Chat Export
 // @namespace    https://github.com/krkn-s
-// @version      2026.08.02.2
+// @version      2026.08.02.3
 // @description  Exports a DeepSeek shared conversation (including the thinking chain) as Markdown or JSON from the share page.
 // @author       krkn-s
 // @homepage     https://github.com/krkn-s/userscripts
@@ -35,7 +35,7 @@
 (function () {
   'use strict';
 
-  const VERSION = '2026.08.02.2';
+  const VERSION = '2026.08.02.3';
   const TOOL = 'deepseek-chat-export/' + VERSION;
   const SHARE_PREFIX = '/a/chat/s/';
 
@@ -525,8 +525,8 @@
     var style = document.createElement('style');
     style.id = 'ds-export-style';
     style.textContent = [
-      '.ds-export-btn{min-width:44px;margin-right:6px;cursor:pointer}',
-      '.ds-export-btn .ds-export-label{font-size:12px;font-weight:600;letter-spacing:.4px;display:inline-flex;align-items:center;padding:0 2px}',
+      '.ds-export-btn{cursor:pointer}',
+      '.ds-export-btn .ds-export-label{font-size:12px;font-weight:600;letter-spacing:.4px;line-height:1;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;padding:0 4px}',
       '.ds-export-btn:active{transform:scale(.97)}',
       '.ds-export-btn[aria-disabled="true"]{opacity:.45;cursor:wait;pointer-events:none}',
       '#ds-export-toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:99999;padding:8px 14px;border-radius:999px;background:color-mix(in srgb,currentColor 12%,transparent);border:1px solid color-mix(in srgb,currentColor 30%,transparent);font:600 12px/1 sans-serif;color:currentColor;opacity:0;transition:opacity .25s ease;pointer-events:none}',
@@ -551,15 +551,17 @@
   }
 
   function makeButton(label, title) {
-    // Mirror the page Share button construction (.ds-button capsule) so the
-    // height, capsule shape and focus behaviour match the native UI exactly.
+    // Mirror the page Share button construction one-to-one — same class batch
+    // and same internal wrappers (.ds-button__background, .ds-button__icon,
+    // .ds-icon), so height, centering and capsule shape match the native UI
+    // exactly instead of looking vertically offset.
     var btn = document.createElement('div');
     btn.setAttribute('role', 'button');
     btn.setAttribute('tabindex', '0');
     btn.title = title;
     btn.className = [
       'ds-button',
-      'ds-button--iconLabelTertiary',
+      'ds-button--iconLabelPrimary',
       'ds-button--icon',
       'ds-button--capsule',
       'ds-button--l',
@@ -572,10 +574,14 @@
     bg.className = 'ds-button__background';
     var icon = document.createElement('div');
     icon.className = 'ds-button__icon ds-button__icon--last-child';
+    var dsIcon = document.createElement('div');
+    dsIcon.className = 'ds-icon';
+    dsIcon.setAttribute('style', 'font-size: inherit;');
     var labelEl = document.createElement('span');
     labelEl.className = 'ds-export-label';
     labelEl.textContent = label;
-    icon.appendChild(labelEl);
+    dsIcon.appendChild(labelEl);
+    icon.appendChild(dsIcon);
     btn.appendChild(bg);
     btn.appendChild(icon);
     return btn;
