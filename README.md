@@ -11,6 +11,7 @@ good alternative.
 
 | Script | Site | What it does | Install |
 | --- | --- | --- | --- |
+| [DeepSeek Chat Export](docs/deepseek-chat-export.md) | DeepSeek | Exports a shared conversation (with thinking chain) as Markdown or JSON. | [Install](https://raw.githubusercontent.com/krkn-s/userscripts/main/userscripts/deepseek-chat-export.user.js) |
 | [Perplexity Hide Space Threads](docs/perplexity-hide-non-space-threads.md) | Perplexity | Hides Library threads attached to Spaces or Bookmarks. | [Install](https://raw.githubusercontent.com/krkn-s/userscripts/main/userscripts/perplexity-hide-non-space-threads.user.js) |
 | [YouTube Default to My Subscriptions](docs/youtube-default-to-subscriptions.md) | YouTube | Redirects signed-in home page visits to Subscriptions. | [Install](https://raw.githubusercontent.com/krkn-s/userscripts/main/userscripts/youtube-default-to-subscriptions.user.js) |
 | [YouTube Transcript Copy & Download](docs/youtube-transcript-copy-download.md) | YouTube | Copies or downloads timestamped video transcripts. | [Install](https://raw.githubusercontent.com/krkn-s/userscripts/main/userscripts/youtube-transcript-copy-download.user.js) |

@@ -5,3 +5,6 @@
 .Trashes
 Icon?
 .AppleDouble
+
+# DeepSeek page dump used for local development only
+tmp/
